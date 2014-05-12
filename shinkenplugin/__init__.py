@@ -24,6 +24,7 @@ import os
 import signal
 import re
 import argparse
+import traceback
 
 
 """ Standard Nagios Return Codes """
@@ -48,11 +49,19 @@ class Plugin:
         self._timeout_code = None
         if version is None:
             version = "undefined"
+        sys.excepthook = self._excepthook
         self.parser = argparse.ArgumentParser()
         self.parser.add_argument("-H", "--hostname", help="hostname", metavar="HOSTNAME")
         self.parser.add_argument("-t", "--timeout", help="timeout", metavar="TIMEOUT", default=10, nargs=1, type=int)
         self.parser.add_argument("-v", "--verbose", help="increase verbosity", action="count")
         self.parser.add_argument("-V", "--version", help="show version", action="version", version=name + " " + str(version))
+
+# Exception hook
+
+    def _excepthook(self, etype, evalue, tb):
+        self.exit(code=UNKNOWN,
+            message="Uncaught exception: %s - %s" % (etype.__name__, evalue),
+            extdata="".join(traceback.format_tb(tb)))
 
 # Timeout handling
 
