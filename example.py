@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-""" Shinkenplugin example plugin """
+""" nagplug example plugin """
 
-import shinkenplugin
+import nagplug
 
 def main():
 
-    # Create a new shinkenplugin.Plugin instance
-    sp = shinkenplugin.Plugin(version='1.0')
+    # Create a new nagplug.Plugin instance
+    sp = nagplug.Plugin(version='1.0')
 
     # Add some arguments to parse
     sp.add_arg('-w', '--warning', metavar="THRESHOLD", type=str,
@@ -30,14 +30,14 @@ def main():
     code = sp.check_threshold(value, warning=t_warn, critical=t_crit)
 
     # Add result to the stack
-    sp.add_result(code, "value=%d" % value)
+    sp.add_result(code, "value={0}".format(value))
 
     # Add some performance data to the stack
     sp.add_perfdata("value", value, warning=t_warn, critical=t_crit, minimum=0, maximum=100)
 
     # Add some extra data if needed
     if sp.args.verbose > 2:
-        sp.add_extdata("value has been determined to be %d" % (value))
+        sp.add_extdata('value has been determined to be {0}'.format(value))
 
     # Exit printing the conclusions in a nagios-plugin compliant way
     sp.finish()
