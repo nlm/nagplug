@@ -6,7 +6,7 @@ import shinkenplugin
 def main():
 
     # Create a new shinkenplugin.Plugin instance
-    sp = shinkenplugin.Plugin()
+    sp = shinkenplugin.Plugin(version='1.0')
 
     # Add some arguments to parse
     sp.add_arg('-w', '--warning', metavar="THRESHOLD", type=str,
