@@ -44,8 +44,9 @@ class Plugin(object):
         """
         initialize the plugin object
 
-        name: the name of the plugin, as used in the auto-generated help
-        version: an optional version of your plugin
+        parameters:
+            name: the name of the plugin, as used in the auto-generated help
+            version: an optional version of your plugin
         """
         self.name = name
         self.args = None
@@ -95,8 +96,9 @@ class Plugin(object):
         set the timeout for plugin operations
         when timeout is reached, exit properly with nagios-compliant output
 
-        timeout: timeout in seconds
-        code: exit status code
+        parameters:
+            timeout: timeout in seconds
+            code: exit status code
         """
         if timeout is None:
             timeout = self.args.timeout if self.args.timeout else 10
@@ -113,10 +115,11 @@ class Plugin(object):
         """
         manual exit from the plugin
 
-        code: exit status code
-        message: a short, one-line message to display
-        perfdata: perfdata, if any
-        extdata: multi-line message to give more details
+        parameters:
+            code: exit status code
+            message: a short, one-line message to display
+            perfdata: perfdata, if any
+            extdata: multi-line message to give more details
         """
         code = UNKNOWN if code is None else int(code)
         message = "" if message is None else str(message)
@@ -134,7 +137,8 @@ class Plugin(object):
         manual exit to use in case of internal error
         always return UNKNOWN status
 
-        message: a short, one-line message to display
+        parameters:
+            message: a short, one-line message to display
         """
         self.exit(code=UNKNOWN, message=message)
 
@@ -145,10 +149,11 @@ class Plugin(object):
 
         all parameters are optional
 
-        code: exit status code
-        message: a short, one-line message to display
-        perfdata: perfdata, if any
-        extdata: multi-line message to give more details
+        parameters:
+            code: exit status code
+            message: a short, one-line message to display
+            perfdata: perfdata, if any
+            extdata: multi-line message to give more details
         """
         if code is None:
             code = self.get_code()
@@ -168,7 +173,11 @@ class Plugin(object):
         transmitted to internal argparse
         see argparse documentation for details
 
-        returns the parser object for convenience
+        parameters:
+            same as argparse.add_argument
+
+        returns:
+            the parser object for convenience
         """
         return self.parser.add_argument(*args, **kwargs)
 
@@ -176,7 +185,8 @@ class Plugin(object):
         """
         parses the arguments from command-line
 
-        returns a dictionnary containing the arguments
+        returns:
+            a dictionnary containing the arguments
         """
         self.args = self.parser.parse_args()
         return self.args
@@ -189,9 +199,13 @@ class Plugin(object):
         checks a value against warning and critical thresholds
         threshold syntax: https://nagios-plugins.org/doc/guidelines.html
 
-        value: the value to check
-        warning: warning threshold
-        caritical: critical threshold
+        parameters:
+            value: the value to check
+            warning: warning threshold
+            critical: critical threshold
+
+        returns:
+            the result status of the check
         """
         if critical is not None:
             if not Threshold(critical).check(value):
@@ -206,14 +220,19 @@ class Plugin(object):
     def add_result(self, *args, **kwargs):
         """
         add a result to the internal result list
-        pass the same arguments as the Result contructor
+
+        parameters:
+            same arguments as for Result()
         """
         self._results.append(Result(*args, **kwargs))
 
     def get_code(self):
         """
         the final code for multi-checks
-        returns the worst-case code from all added results
+
+        returns:
+            the worst-case code from all added results,
+            or UNKNOWN if none were added
         """
         code = UNKNOWN
         for result in self._results:
@@ -224,10 +243,14 @@ class Plugin(object):
     def get_message(self, msglevels=None, joiner=None):
         """
         the final message for mult-checks
-        returns
 
-        msglevels: an array of all desired levels (ex: ['CRITICAL', 'WARNING'])
-        joiner: string used to join all messages (default: ', ')
+        parameters:
+            msglevels: an array of all desired levels (ex: [CRITICAL, WARNING])
+            joiner: string used to join all messages (default: ', ')
+
+        returns:
+            one-line message created with input results
+            or None if there are none
         """
         messages = []
         if joiner is None:
@@ -246,14 +269,18 @@ class Plugin(object):
     def add_perfdata(self, *args, **kwargs):
         """
         add a perfdata to the internal perfdata list
-        pass the same arguments as the Perfdata contructor
+
+        parameters:
+            the same arguments as for Perfdata()
         """
         self._perfdata.append(Perfdata(*args, **kwargs))
 
     def get_perfdata(self):
         """
         the final string for perf data
-        returns the well-formatted perfdata string
+
+        returns:
+            the well-formatted perfdata string
         """
         return ' '.join([str(x) for x in self._perfdata])
 
@@ -262,14 +289,17 @@ class Plugin(object):
     def add_extdata(self, message):
         """
         add extended data to the internal extdata list
-        format is a free-form multiline string
+
+        parameters:
+            message: a free-form string
         """
         self._extdata.append(str(message))
 
     def get_extdata(self):
         """
         the final string for external data
-        returns the external data string
+        returns:
+            the extended data string
         """
         return '\n'.join(self._extdata)
 
@@ -283,8 +313,9 @@ class Result(object):
         """
         initialize a result object
 
-        code: the status code
-        message: the status message
+        parameters:
+            code: the status code
+            message: the status message
         """
         self.code = code
         self.codestr = _CODES_STR[code]
@@ -306,8 +337,9 @@ class Threshold(object):
         """
         initializes a new Threshold Object
 
-        threshold: string describing the threshold
-            (see https://nagios-plugins.org/doc/guidelines.html)
+        parameters:
+            threshold: string describing the threshold
+                (see https://nagios-plugins.org/doc/guidelines.html)
         """
         self._threshold = threshold
         self._min = 0
@@ -319,7 +351,8 @@ class Threshold(object):
         """
         internal threshold string parser
 
-        threshold: string describing the threshold
+        parameters:
+            threshold: string describing the threshold
         """
         match = re.search(r'^(@?)((~|\d*):)?(\d*)$', threshold)
 
@@ -342,13 +375,14 @@ class Threshold(object):
             self._max = float('inf')
 
         if self._max < self._min:
-            raise ParseError('max must be superior to min')
+            raise ValueError('max must be superior to min')
 
     def check(self, value):
         """
         check if a value is correct according to threshold
 
-        value: the value to check
+        parameters:
+            value: the value to check
         """
         if self._inclusive:
             return False if self._min <= value <= self._max else True
@@ -372,13 +406,14 @@ class Perfdata(object):
         most arguments refer to :
         https://nagios-plugins.org/doc/guidelines.html#AEN200
 
-        label: name of the performance data element
-        value: value of the element
-        uom: unit of mesurement
-        warning: the warning threshold string
-        critical: the critical threshold string
-        minimum: minimum value (usually for graphs)
-        maximum: maximul value (usually for graphs)
+        parameters:
+            label: name of the performance data element
+            value: value of the element
+            uom: unit of mesurement
+            warning: the warning threshold string
+            critical: the critical threshold string
+            minimum: minimum value (usually for graphs)
+            maximum: maximul value (usually for graphs)
         """
         self.label = label
         self.value = value
