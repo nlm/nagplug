@@ -6,3 +6,4 @@ install:
   - "pip install ."
 script:
   - "python example.py --value 10 -c :12 -w 9:"
+  - "python setup.py test"
