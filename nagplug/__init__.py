@@ -125,11 +125,11 @@ class Plugin(object):
         message = "" if message is None else str(message)
         perfdata = "" if perfdata is None else str(perfdata)
         extdata = "" if extdata is None else str(extdata)
-        print "{0} {1} - {2} | {3}".format(self.name.upper(),
+        print("{0} {1} - {2} | {3}".format(self.name.upper(),
                                            _CODES_STR[code],
-                                           message, perfdata)
+                                           message, perfdata))
         if extdata:
-            print extdata
+            print(extdata)
         sys.exit(code)
 
     def die(self, message):
