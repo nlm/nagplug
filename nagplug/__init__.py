@@ -66,7 +66,7 @@ class Plugin(object):
                                  metavar="TIMEOUT", default=10,
                                  nargs=1, type=int)
         self.parser.add_argument("-v", "--verbose", help="increase verbosity",
-                                 action="count")
+                                 action="count", default=0)
         self.parser.add_argument("-V", "--version", help="show version",
                                  action="version",
                                  version=name + " " + str(version))
