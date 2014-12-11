@@ -22,6 +22,7 @@ http://nagios-plugins.org/doc/guidelines.html
 
 """
 
+from __future__ import print_function
 import sys
 import os
 import signal
@@ -78,7 +79,8 @@ class Plugin(object):
         internal exception hook
         """
         self.exit(code=UNKNOWN,
-                  message='Uncaught exception: {0} - {1}'.format(etype.__name__, evalue),
+                  message='Uncaught exception: {0} - {1}'
+                  .format(etype.__name__, evalue),
                   extdata=''.join(traceback.format_tb(trace)))
 
     # Timeout handling
@@ -163,7 +165,8 @@ class Plugin(object):
             perfdata = self.get_perfdata()
         if extdata is None:
             extdata = self.get_extdata()
-        self.exit(code=code, message=message, perfdata=perfdata, extdata=extdata)
+        self.exit(code=code, message=message,
+                  perfdata=perfdata, extdata=extdata)
 
     # Argument Parsing
 
@@ -236,7 +239,8 @@ class Plugin(object):
         """
         code = UNKNOWN
         for result in self._results:
-            if code == UNKNOWN or (result.code < UNKNOWN and result.code > code):
+            if code == UNKNOWN or (result.code < UNKNOWN
+                                   and result.code > code):
                 code = result.code
         return code
 
@@ -436,4 +440,3 @@ class Perfdata(object):
 
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__, self.label)
-

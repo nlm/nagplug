@@ -3,7 +3,7 @@ from nagplug import Threshold, ParseError
 from nagplug import Plugin, OK, WARNING, CRITICAL, UNKNOWN
 
 
-class TestTreshold(unittest.TestCase):
+class TestThreshold(unittest.TestCase):
 
     def test_threshold_parseerror(self):
         self.assertRaises(ParseError, Threshold, ("helloworld"))
@@ -126,14 +126,16 @@ class TestMessage(unittest.TestCase):
         plugin.add_result(OK, 'OK')
         plugin.add_result(WARNING, 'WARNING')
         plugin.add_result(CRITICAL, 'CRITICAL')
-        self.assertEqual(plugin.get_message(joiner=', '), ', '.join(['OK', 'WARNING', 'CRITICAL']))
+        self.assertEqual(plugin.get_message(joiner=', '),
+                         ', '.join(['OK', 'WARNING', 'CRITICAL']))
 
     def test_simple_owc_level(self):
         plugin = Plugin()
         plugin.add_result(OK, 'OK')
         plugin.add_result(WARNING, 'WARNING')
         plugin.add_result(CRITICAL, 'CRITICAL')
-        self.assertEqual(plugin.get_message(joiner=', ', msglevels=[WARNING]), ', '.join(['WARNING']))
+        self.assertEqual(plugin.get_message(joiner=', ', msglevels=[WARNING]),
+                         ', '.join(['WARNING']))
 
 
 class TestExtData(unittest.TestCase):
@@ -143,7 +145,8 @@ class TestExtData(unittest.TestCase):
         plugin.add_extdata('OK')
         plugin.add_extdata('hey!')
         plugin.add_extdata('STUFF')
-        self.assertEqual(plugin.get_extdata(), '\n'.join(['OK', 'hey!', 'STUFF']))
+        self.assertEqual(plugin.get_extdata(),
+                         '\n'.join(['OK', 'hey!', 'STUFF']))
 
 
 if __name__ == '__main__':
