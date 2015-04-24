@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 
 A Nagios-plugin-guidelines-compliant plugin creation library
@@ -21,8 +22,7 @@ Official Nagios Plugins Guidelines can be found here:
 http://nagios-plugins.org/doc/guidelines.html
 
 """
-
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 import sys
 import os
 import signal
@@ -41,13 +41,15 @@ _CODES_STR = ['OK', 'WARNING', 'CRITICAL', 'UNKNOWN']
 class Plugin(object):
     """ The main Plugin class, used for all later operations """
 
-    def __init__(self, name=os.path.basename(sys.argv[0]), version=None):
+    def __init__(self, name=os.path.basename(sys.argv[0]), version=None,
+                 add_stdargs=True):
         """
         initialize the plugin object
 
         parameters:
             name: the name of the plugin, as used in the auto-generated help
             version: an optional version of your plugin
+            add_stdargs: add hostname, timeout, verbose and version (default)
         """
         self.name = name
         self.args = None
@@ -61,16 +63,17 @@ class Plugin(object):
             version = "undefined"
         sys.excepthook = self._excepthook
         self.parser = argparse.ArgumentParser()
-        self.parser.add_argument("-H", "--hostname",
-                                 help="hostname", metavar="HOSTNAME")
-        self.parser.add_argument("-t", "--timeout", help="timeout",
-                                 metavar="TIMEOUT", default=10,
-                                 nargs=1, type=int)
-        self.parser.add_argument("-v", "--verbose", help="increase verbosity",
-                                 action="count", default=0)
-        self.parser.add_argument("-V", "--version", help="show version",
-                                 action="version",
-                                 version=name + " " + str(version))
+        if add_stdargs:
+            self.parser.add_argument("-H", "--hostname",
+                                     help="hostname", metavar="HOSTNAME")
+            self.parser.add_argument("-t", "--timeout", help="timeout",
+                                     metavar="TIMEOUT", default=30, type=int)
+            self.parser.add_argument("-v", "--verbose",
+                                     help="increase verbosity",
+                                     action="count", default=0)
+            self.parser.add_argument("-V", "--version", help="show version",
+                                     action="version",
+                                     version=name + " " + str(version))
 
     # Exception hook
 
@@ -80,7 +83,7 @@ class Plugin(object):
         """
         self.exit(code=UNKNOWN,
                   message='Uncaught exception: {0} - {1}'
-                  .format(etype.__name__, evalue),
+                          .format(etype.__name__, evalue),
                   extdata=''.join(traceback.format_tb(trace)))
 
     # Timeout handling
