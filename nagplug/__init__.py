@@ -22,6 +22,7 @@ Official Nagios Plugins Guidelines can be found here:
 http://nagios-plugins.org/doc/guidelines.html
 
 """
+
 from __future__ import print_function, unicode_literals
 import sys
 import os
