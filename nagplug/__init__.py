@@ -23,7 +23,7 @@ http://nagios-plugins.org/doc/guidelines.html
 
 """
 
-from __future__ import print_function, unicode_literals
+from __future__ import print_function
 import sys
 import os
 import signal
