@@ -52,8 +52,8 @@ class Plugin(object):
             version: an optional version of your plugin
             add_stdargs: add hostname, timeout, verbose and version (default)
         """
-        self.name = name
-        self.args = None
+        self._name = name
+        self._args = None
         self._timeout = 10
         self._results = []
         self._perfdata = []
@@ -63,7 +63,7 @@ class Plugin(object):
         if version is None:
             version = "undefined"
         sys.excepthook = self._excepthook
-        self.parser = argparse.ArgumentParser()
+        self._parser = argparse.ArgumentParser()
         if add_stdargs:
             self.parser.add_argument("-H", "--hostname",
                                      help="hostname", metavar="HOSTNAME")
@@ -75,6 +75,34 @@ class Plugin(object):
             self.parser.add_argument("-V", "--version", help="show version",
                                      action="version",
                                      version=name + " " + str(version))
+
+    # Properties
+
+    @property
+    def parser(self):
+        """
+        the plugin's internal argparse parser,
+        so you can do some more advanced stuff
+        """
+        return self._parser
+
+    @property
+    def name(self):
+        """
+        this plugin's name
+        """
+        return self._name
+
+    @property
+    def args(self):
+        """
+        the parsed arguments, as a convenience shortcut
+
+        returns:
+            the result of the previous parse_args call,
+            or None if arguments have not yet been parsed
+        """
+        return self._args
 
     # Exception hook
 
@@ -195,7 +223,7 @@ class Plugin(object):
         returns:
             a dictionnary containing the arguments
         """
-        self.args = self.parser.parse_args()
+        self._args = self.parser.parse_args()
         return self.args
 
     # Threshold

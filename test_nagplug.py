@@ -2,6 +2,13 @@ import unittest
 from nagplug import Threshold, ParseError
 from nagplug import Plugin, OK, WARNING, CRITICAL, UNKNOWN
 
+class TestParsing(unittest.TestCase):
+
+    def test_parse(self):
+        plugin = Plugin()
+        plugin.add_arg('-e', '--test', action='store_true')
+        args = plugin.parser.parse_args(['-e'])
+        self.assertTrue(args.test)
 
 class TestThreshold(unittest.TestCase):
 
