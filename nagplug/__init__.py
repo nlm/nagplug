@@ -47,7 +47,7 @@ class Plugin(object):
         """
         initialize the plugin object
 
-        parameters:
+        arguments:
             name: the name of the plugin, as used in the auto-generated help
             version: an optional version of your plugin
             add_stdargs: add hostname, timeout, verbose and version (default)
@@ -136,7 +136,7 @@ class Plugin(object):
         set the timeout for plugin operations
         when timeout is reached, exit properly with nagios-compliant output
 
-        parameters:
+        arguments:
             timeout: timeout in seconds
             code: exit status code
         """
@@ -155,7 +155,7 @@ class Plugin(object):
         """
         manual exit from the plugin
 
-        parameters:
+        arguments:
             code: exit status code
             message: a short, one-line message to display
             perfdata: perfdata, if any
@@ -177,7 +177,7 @@ class Plugin(object):
         manual exit to use in case of internal error
         always return UNKNOWN status
 
-        parameters:
+        arguments:
             message: a short, one-line message to display
         """
         self.exit(code=UNKNOWN, message=message)
@@ -189,7 +189,7 @@ class Plugin(object):
 
         all parameters are optional
 
-        parameters:
+        arguments:
             code: exit status code
             message: a short, one-line message to display
             perfdata: perfdata, if any
@@ -214,7 +214,7 @@ class Plugin(object):
         transmitted to internal argparse
         see argparse documentation for details
 
-        parameters:
+        arguments:
             same as argparse.add_argument
 
         returns:
@@ -240,7 +240,7 @@ class Plugin(object):
         checks a value against warning and critical thresholds
         threshold syntax: https://nagios-plugins.org/doc/guidelines.html
 
-        parameters:
+        arguments:
             value: the value to check
             warning: warning threshold
             critical: critical threshold
@@ -266,7 +266,7 @@ class Plugin(object):
         """
         add a result to the internal result list
 
-        parameters:
+        arguments:
             same arguments as for Result()
         """
         self._results.append(Result(*args, **kwargs))
@@ -275,7 +275,7 @@ class Plugin(object):
         """
         the final code for multi-checks
 
-        returns:
+        arguments:
             the worst-case code from all added results,
             or UNKNOWN if none were added
         """
@@ -290,7 +290,7 @@ class Plugin(object):
         """
         the final message for mult-checks
 
-        parameters:
+        arguments:
             msglevels: an array of all desired levels (ex: [CRITICAL, WARNING])
             joiner: string used to join all messages (default: ', ')
 
@@ -316,7 +316,7 @@ class Plugin(object):
         """
         add a perfdata to the internal perfdata list
 
-        parameters:
+        arguments:
             the same arguments as for Perfdata()
         """
         self._perfdata.append(Perfdata(*args, **kwargs))
@@ -336,7 +336,7 @@ class Plugin(object):
         """
         add extended data to the internal extdata list
 
-        parameters:
+        arguments:
             message: a free-form string
         """
         self._extdata.append(str(message))
@@ -359,7 +359,7 @@ class Result(object):
         """
         initialize a result object
 
-        parameters:
+        arguments:
             code: the status code
             message: the status message
         """
@@ -383,7 +383,7 @@ class Threshold(object):
         """
         initializes a new Threshold Object
 
-        parameters:
+        arguments:
             threshold: string describing the threshold
                 (see https://nagios-plugins.org/doc/guidelines.html)
         """
@@ -397,7 +397,7 @@ class Threshold(object):
         """
         internal threshold string parser
 
-        parameters:
+        arguments:
             threshold: string describing the threshold
         """
         match = re.search(r'^(@?)((~|\d*):)?(\d*)$', threshold)
@@ -427,7 +427,7 @@ class Threshold(object):
         """
         check if a value is correct according to threshold
 
-        parameters:
+        arguments:
             value: the value to check
         """
         if self._inclusive:
@@ -452,7 +452,7 @@ class Perfdata(object):
         most arguments refer to :
         https://nagios-plugins.org/doc/guidelines.html#AEN200
 
-        parameters:
+        arguments:
             label: name of the performance data element
             value: value of the element
             uom: unit of mesurement
