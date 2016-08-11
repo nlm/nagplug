@@ -10,11 +10,11 @@ def main():
     sp = nagplug.Plugin(version='1.0')
 
     # Add some arguments to parse
-    sp.add_arg('-w', '--warning', metavar="THRESHOLD", type=str,
-               help='Warning Threshold, see https://nagios-plugins.org'
+    sp.add_arg('-w', '--warning', metavar="THRESHOLD", type=nagplug.Threshold,
+               help='Warning Threshold, see https://monitoring-plugins.org'
                     '/doc/guidelines.html#THRESHOLDFORMAT')
-    sp.add_arg('-c', '--critical', metavar="THRESHOLD", type=str,
-               help='Warning Threshold, see https://nagios-plugins.org'
+    sp.add_arg('-c', '--critical', metavar="THRESHOLD", type=nagplug.Threshold,
+               help='Warning Threshold, see https://monitoring-plugins.org'
                     '/doc/guidelines.html#THRESHOLDFORMAT')
     sp.add_arg('--value', required=1, metavar='VALUE', type=int)
 
