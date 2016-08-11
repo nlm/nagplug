@@ -1,6 +1,6 @@
 import unittest
-from nagplug import Threshold, ParseError
-from nagplug import Plugin, OK, WARNING, CRITICAL, UNKNOWN
+from nagplug import Plugin, Threshold, ParseError
+from nagplug import OK, WARNING, CRITICAL, UNKNOWN
 
 class TestParsing(unittest.TestCase):
 
@@ -9,6 +9,25 @@ class TestParsing(unittest.TestCase):
         plugin.add_arg('-e', '--test', action='store_true')
         args = plugin.parser.parse_args(['-e'])
         self.assertTrue(args.test)
+
+    def test_parse_threshold_string(self):
+        plugin = Plugin()
+        plugin.add_arg('-w', '--warning-threshold')
+        plugin.add_arg('-c', '--critical-threshold')
+        args = plugin.parser.parse_args(['-w', '10:20', '-c', '0:40'])
+        self.assertEqual(OK, plugin.check_threshold(15,
+                                                    args.warning_threshold,
+                                                    args.critical_threshold))
+
+    def test_parse_threshold_native(self):
+        plugin = Plugin()
+        plugin.add_arg('-w', '--warning-threshold', type=Threshold)
+        plugin.add_arg('-c', '--critical-threshold', type=Threshold)
+        args = plugin.parser.parse_args(['-w', '10:20', '-c', '0:40'])
+        self.assertEqual(OK, plugin.check_threshold(15,
+                                                    args.warning_threshold,
+                                                    args.critical_threshold))
+
 
 class TestThreshold(unittest.TestCase):
 

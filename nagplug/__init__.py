@@ -249,10 +249,14 @@ class Plugin(object):
             the result status of the check
         """
         if critical is not None:
-            if not Threshold(critical).check(value):
+            if not isinstance(critical, Threshold):
+                critical = Threshold(critical)
+            if not critical.check(value):
                 return CRITICAL
         if warning is not None:
-            if not Threshold(warning).check(value):
+            if not isinstance(warning, Threshold):
+                warning = Threshold(warning)
+            if not warning.check(value):
                 return WARNING
         return OK
 
