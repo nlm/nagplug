@@ -110,6 +110,16 @@ class Plugin(object):
         """
         return self._args
 
+    @property
+    def results(self):
+        """
+        the list of results
+
+        returns:
+            the list of all result objects from add_result calls
+        """
+        return self._results
+
     # Exception hook
 
     def _excepthook(self, etype, evalue, trace):
