@@ -262,14 +262,14 @@ class Plugin(object):
 
     # Results Handling
 
-    def add_result(self, *args, **kwargs):
+    def add_result(self, code, message=None):
         """
         add a result to the internal result list
 
         arguments:
             same arguments as for Result()
         """
-        self._results.append(Result(*args, **kwargs))
+        self._results.append(Result(code, message))
 
     def get_code(self):
         """
@@ -306,9 +306,7 @@ class Plugin(object):
         for result in self._results:
             if result.code in msglevels:
                 messages.append(result.message)
-        if not messages:
-            return None
-        return joiner.join(messages)
+        return joiner.join([msg for msg in messages if msg])
 
     # Perfdata
 
@@ -355,7 +353,7 @@ class Result(object):
     Object representing a result
     """
 
-    def __init__(self, code, message):
+    def __init__(self, code, message=None):
         """
         initialize a result object
 
