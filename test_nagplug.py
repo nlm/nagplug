@@ -140,7 +140,7 @@ class TestMessage(unittest.TestCase):
 
     def test_simple_default(self):
         plugin = Plugin()
-        self.assertEqual(plugin.get_message(), None)
+        self.assertEqual(plugin.get_message(), '')
 
     def test_simple_ok(self):
         plugin = Plugin()
