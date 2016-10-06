@@ -246,14 +246,17 @@ class Plugin(object):
         """
         return self.parser.add_argument(*args, **kwargs)
 
-    def parse_args(self):
+    def parse_args(self, arguments=None):
         """
         parses the arguments from command-line
+
+        arguments:
+            optional argument list to parse
 
         returns:
             a dictionnary containing the arguments
         """
-        self._args = self.parser.parse_args()
+        self._args = self.parser.parse_args(arguments)
         return self.args
 
     # Threshold
