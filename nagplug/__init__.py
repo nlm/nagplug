@@ -52,7 +52,7 @@ class Plugin(object):
     """ The main Plugin class, used for all later operations """
 
     def __init__(self, name=os.path.basename(sys.argv[0]), version=None,
-                 add_stdargs=True):
+                 add_stdargs=True, catch_exceptions=True):
         """
         initialize the plugin object
 
@@ -60,6 +60,7 @@ class Plugin(object):
             name: the name of the plugin, as used in the auto-generated help
             version: an optional version of your plugin
             add_stdargs: add hostname, timeout, verbose and version (default)
+            catch_exceptions: gracefully catch exceptions
         """
         self._name = name
         self._args = None
@@ -71,7 +72,8 @@ class Plugin(object):
         self._timeout_code = None
         if version is None:
             version = "undefined"
-        sys.excepthook = self._excepthook
+        if catch_exceptions is True:
+            sys.excepthook = self._excepthook
         self._parser = ThrowingArgumentParser()
         if add_stdargs:
             self.parser.add_argument("-H", "--hostname",
