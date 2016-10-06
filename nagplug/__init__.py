@@ -39,6 +39,15 @@ UNKNOWN = 3
 _CODES_STR = ['OK', 'WARNING', 'CRITICAL', 'UNKNOWN']
 
 
+class ArgumentParserError(Exception):
+    pass
+
+
+class ThrowingArgumentParser(argparse.ArgumentParser):
+    def error(self, message):
+        raise ArgumentParserError(message)
+
+
 class Plugin(object):
     """ The main Plugin class, used for all later operations """
 
@@ -63,7 +72,7 @@ class Plugin(object):
         if version is None:
             version = "undefined"
         sys.excepthook = self._excepthook
-        self._parser = argparse.ArgumentParser()
+        self._parser = ThrowingArgumentParser()
         if add_stdargs:
             self.parser.add_argument("-H", "--hostname",
                                      help="hostname", metavar="HOSTNAME")
@@ -126,10 +135,15 @@ class Plugin(object):
         """
         internal exception hook
         """
-        self.exit(code=UNKNOWN,
-                  message='Uncaught exception: {0} - {1}'
-                          .format(etype.__name__, evalue),
-                  extdata=''.join(traceback.format_tb(trace)))
+        if etype == ArgumentParserError:
+            self.exit(code=CRITICAL,
+                      message='error: {0}'.format(evalue),
+                      extdata=self.parser.format_usage())
+        else:
+            self.exit(code=UNKNOWN,
+                      message='Uncaught exception: {0} - {1}'
+                              .format(etype.__name__, evalue),
+                      extdata=''.join(traceback.format_tb(trace)))
 
     # Timeout handling
 
