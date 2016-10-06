@@ -1,6 +1,7 @@
 import unittest
-from nagplug import Plugin, Threshold, ParseError
+from nagplug import Plugin, Threshold, ArgumentParserError
 from nagplug import OK, WARNING, CRITICAL, UNKNOWN
+
 
 class TestParsing(unittest.TestCase):
 
@@ -14,7 +15,7 @@ class TestParsing(unittest.TestCase):
         plugin = Plugin()
         plugin.add_arg('-w', '--warning-threshold')
         plugin.add_arg('-c', '--critical-threshold')
-        args = plugin.parser.parse_args(['-w', '10:20', '-c', '0:40'])
+        args = plugin.parse_args(['-w', '10:20', '-c', '0:40'])
         self.assertEqual(OK, plugin.check_threshold(15,
                                                     args.warning_threshold,
                                                     args.critical_threshold))
@@ -23,16 +24,26 @@ class TestParsing(unittest.TestCase):
         plugin = Plugin()
         plugin.add_arg('-w', '--warning-threshold', type=Threshold)
         plugin.add_arg('-c', '--critical-threshold', type=Threshold)
-        args = plugin.parser.parse_args(['-w', '10:20', '-c', '0:40'])
+        args = plugin.parse_args(['-w', '10:20', '-c', '0:40'])
         self.assertEqual(OK, plugin.check_threshold(15,
                                                     args.warning_threshold,
                                                     args.critical_threshold))
+
+    def test_parse_exceptions(self):
+        plugin = Plugin()
+        plugin.add_arg('test')
+        self.assertRaises(ArgumentParserError, plugin.parse_args, [])
+
+    def test_parse_exceptions(self):
+        plugin = Plugin()
+        plugin.add_arg('threshold', type=Threshold)
+        self.assertRaises(ArgumentParserError, plugin.parse_args, [])
 
 
 class TestThreshold(unittest.TestCase):
 
     def test_threshold_parseerror(self):
-        self.assertRaises(ParseError, Threshold, ("helloworld"))
+        self.assertRaises(ValueError, Threshold, ("helloworld"))
 
     def test_threshold_valueerror(self):
         self.assertRaises(ValueError, Threshold, ("10:2"))
@@ -75,6 +86,9 @@ class TestThreshold(unittest.TestCase):
 
     def test_threshold_invert_range(self):
         self.assertFalse(Threshold("@10:20").check(10))
+
+    def test_threshold_invert_upper(self):
+        self.assertFalse(Threshold("@:20").check(10))
 
     def test_threshold_openrange_simple(self):
         self.assertTrue(Threshold("10:").check(20))
