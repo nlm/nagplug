@@ -399,7 +399,7 @@ class Result(object):
 
 
 class ParseError(RuntimeError):
-    """ exception returned for parsing errors """
+    """ legacy, for compatibility purposes """
     pass
 
 
@@ -430,7 +430,7 @@ class Threshold(object):
         match = re.search(r'^(@?)((~|\d*):)?(\d*)$', threshold)
 
         if not match:
-            raise ParseError('Error parsing Threshold: {0}'.format(threshold))
+            raise ValueError('Error parsing Threshold: {0}'.format(threshold))
 
         if match.group(1) == '@':
             self._inclusive = True
