@@ -16,7 +16,7 @@ def main():
     sp.add_arg('-c', '--critical', metavar="THRESHOLD", type=nagplug.Threshold,
                help='Warning Threshold, see https://monitoring-plugins.org'
                     '/doc/guidelines.html#THRESHOLDFORMAT')
-    sp.add_arg('--value', required=1, metavar='VALUE', type=int)
+    sp.add_arg('--value', required=True, metavar='VALUE', type=int)
 
     # Parse the arguments
     sp.parse_args()
