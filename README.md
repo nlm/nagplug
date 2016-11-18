@@ -1,4 +1,4 @@
-Nagplug ![Build Status](https://img.shields.io/travis/nlm/nagplug.svg) ![GitHub release](https://img.shields.io/github/release/qubyte/rubidium.svg) ![PyPI](https://img.shields.io/pypi/v/nagplug.svg) [![License: MIT](https://img.shields.io/github/license/nlm/parseable.svg)](https://opensource.org/licenses/MIT)
+Nagplug ![Build Status](https://img.shields.io/travis/nlm/nagplug.svg) ![GitHub release](https://img.shields.io/github/release/nlm/nagplug.svg) ![PyPI](https://img.shields.io/pypi/v/nagplug.svg) [![License: MIT](https://img.shields.io/github/license/nlm/parseable.svg)](https://opensource.org/licenses/MIT)
 =======
 
 A library to easily write Monitoring Plugins compliant with the
