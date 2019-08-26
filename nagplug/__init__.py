@@ -366,7 +366,8 @@ class Plugin(object):
         arguments:
             message: a free-form string
         """
-        self._extdata.append(str(message))
+        message = str(message).replace('|', '!')
+        self._extdata.append()
 
     def get_extdata(self):
         """
