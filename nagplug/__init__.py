@@ -223,8 +223,9 @@ class Plugin(object):
         """
         if code is None:
             code = self.get_code()
+        codes = [code] if type(code) != list else code
         if message is None:
-            message = self.get_message(msglevels=[code])
+            message = self.get_message(msglevels=codes)
         if perfdata is None:
             perfdata = self.get_perfdata()
         if extdata is None:
