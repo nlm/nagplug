@@ -30,6 +30,7 @@ import signal
 import re
 import argparse
 import traceback
+import logging
 
 
 OK = 0
@@ -46,6 +47,16 @@ class ArgumentParserError(Exception):
 class ThrowingArgumentParser(argparse.ArgumentParser):
     def error(self, message):
         raise ArgumentParserError(message)
+
+
+class NagplugLoggingHandler(logging.StreamHandler):
+    def __init__(self, plugin):
+        self.plugin = plugin
+        super(NagplugLoggingHandler, self).__init__()
+
+    def emit(self, record):
+        message = self.format(record)
+        self.plugin.add_extdata(message)
 
 
 class Plugin(object):
@@ -375,6 +386,15 @@ class Plugin(object):
             the extended data string
         """
         return '\n'.join(self._extdata)
+    
+    # Utils
+
+    def extdata_log_handler(self):
+        """
+        returns:
+            NagplugLogHandler linked to this instance
+        """
+        return NagplugLogHandler(self)
 
 
 class Result(object):
