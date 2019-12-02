@@ -163,3 +163,12 @@ This will be logged in the output
 This will also be logged
 
 ```
+
+The `extdata_log_handler` method returns a convenient `LogHandler` for
+Python's `logging` framework that registers all output logs as extdata.
+
+```python
+log = logging.getLogger()
+log.addHandler(plugin.extdata_log_handler())
+log.info('This log will be registered as extdata')
+```
