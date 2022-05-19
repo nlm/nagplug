@@ -29,12 +29,12 @@ class TestParsing(unittest.TestCase):
                                                     args.warning_threshold,
                                                     args.critical_threshold))
 
-    def test_parse_exceptions(self):
+    def test_parse_exceptions_test(self):
         plugin = Plugin()
         plugin.add_arg('test')
         self.assertRaises(ArgumentParserError, plugin.parse_args, [])
 
-    def test_parse_exceptions(self):
+    def test_parse_exceptions_threshold(self):
         plugin = Plugin()
         plugin.add_arg('threshold', type=Threshold)
         self.assertRaises(ArgumentParserError, plugin.parse_args, [])
