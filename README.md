@@ -156,6 +156,7 @@ Extended data can help you by having more details in your output,
 while keeping the main status line short and clear.
 
 ```python
+>>> plugin = Plugin()
 >>> plugin.add_extdata('This will be logged in the output')
 >>> plugin.add_extdata('This will also be logged')
 >>> print(plugin.get_extdata())
@@ -170,10 +171,13 @@ Python's `logging` framework that registers all output logs as extdata.
 ```python
 >>> import logging
 >>> log = logging.getLogger()
+>>> log.level = logging.DEBUG
+>>> plugin = Plugin()
 >>> log.addHandler(plugin.extdata_log_handler())
 >>> log.info('This log will be registered as extdata')
 >>> log.debug('This one also')
 >>> print(plugin.get_extdata())
 This log will be registered as extdata
 This one also
+
 ```
