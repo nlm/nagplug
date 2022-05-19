@@ -2,7 +2,7 @@
 """
 
 A Nagios-plugin-guidelines-compliant plugin creation library
-Copyright (C) 2014 Nicolas Limage
+Copyright (C) 2014-2022 Nicolas Limage
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -30,13 +30,14 @@ import signal
 import re
 import argparse
 import traceback
+import typing
 
 
-OK = 0
-WARNING = 1
-CRITICAL = 2
-UNKNOWN = 3
-_CODES_STR = ['OK', 'WARNING', 'CRITICAL', 'UNKNOWN']
+OK: int = 0
+WARNING: int = 1
+CRITICAL: int = 2
+UNKNOWN: int = 3
+_CODES_STR: typing.List[str] = ['OK', 'WARNING', 'CRITICAL', 'UNKNOWN']
 
 
 class ArgumentParserError(Exception):
@@ -44,15 +45,15 @@ class ArgumentParserError(Exception):
 
 
 class ThrowingArgumentParser(argparse.ArgumentParser):
-    def error(self, message):
+    def error(self, message: str) -> typing.NoReturn:
         raise ArgumentParserError(message)
 
 
-class Plugin(object):
+class Plugin:
     """ The main Plugin class, used for all later operations """
 
-    def __init__(self, name=os.path.basename(sys.argv[0]), version=None,
-                 add_stdargs=True, catch_exceptions=True):
+    def __init__(self, name: str = os.path.basename(sys.argv[0]), version: str = None,
+                 add_stdargs: bool = True, catch_exceptions: bool = True) -> None:
         """
         initialize the plugin object
 
@@ -62,19 +63,19 @@ class Plugin(object):
             add_stdargs: add hostname, timeout, verbose and version (default)
             catch_exceptions: gracefully catch exceptions
         """
-        self._name = name
-        self._args = None
-        self._timeout = 10
-        self._results = []
-        self._perfdata = []
-        self._extdata = []
-        self._timeout_delay = None
-        self._timeout_code = None
+        self._name: str = name
+        self._args: typing.Optional[argparse.Namespace] = None
+        self._timeout: int = 10
+        self._results: typing.List["Result"] = []
+        self._perfdata: typing.List["Perfdata"] = []
+        self._extdata: typing.List[str] = []
+        self._timeout_delay: typing.Optional[int] = None
+        self._timeout_code: typing.Optional[int] = None
         if version is None:
             version = "undefined"
         if catch_exceptions is True:
             sys.excepthook = self._excepthook
-        self._parser = ThrowingArgumentParser()
+        self._parser: ThrowingArgumentParser = ThrowingArgumentParser()
         if add_stdargs:
             self.parser.add_argument("-H", "--hostname",
                                      help="hostname", metavar="HOSTNAME")
@@ -90,13 +91,13 @@ class Plugin(object):
     def __enter__(self):
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.finish()
 
     # Properties
 
     @property
-    def parser(self):
+    def parser(self) -> "ThrowingArgumentParser":
         """
         the plugin's internal argparse parser,
         so you can do some more advanced stuff
@@ -104,14 +105,14 @@ class Plugin(object):
         return self._parser
 
     @property
-    def name(self):
+    def name(self) -> str:
         """
         this plugin's name
         """
         return self._name
 
     @property
-    def args(self):
+    def args(self) -> typing.Optional[argparse.Namespace]:
         """
         the parsed arguments, as a convenience shortcut
 
@@ -122,7 +123,7 @@ class Plugin(object):
         return self._args
 
     @property
-    def results(self):
+    def results(self) -> typing.List["Result"]:
         """
         the list of results
 
@@ -133,7 +134,7 @@ class Plugin(object):
 
     # Exception hook
 
-    def _excepthook(self, etype, evalue, trace):
+    def _excepthook(self, etype, evalue, trace) -> None:
         """
         internal exception hook
         """
@@ -149,7 +150,7 @@ class Plugin(object):
 
     # Timeout handling
 
-    def _timeout_handler(self, signum, frame):
+    def _timeout_handler(self, signum, frame) -> None:
         """
         internal timeout handler
         """
@@ -157,7 +158,7 @@ class Plugin(object):
         self.exit(code=self._timeout_code,
                   message=msgfmt.format(self._timeout_delay))
 
-    def set_timeout(self, timeout=None, code=None):
+    def set_timeout(self, timeout: int = None, code: int = None) -> None:
         """
         set the timeout for plugin operations
         when timeout is reached, exit properly with nagios-compliant output
@@ -167,7 +168,7 @@ class Plugin(object):
             code: exit status code
         """
         if timeout is None:
-            timeout = self.args.timeout if self.args.timeout else 10
+            timeout = self.args.timeout if self.args and self.args.timeout else 10
         if code is None:
             code = UNKNOWN
         self._timeout_delay = timeout
@@ -177,7 +178,7 @@ class Plugin(object):
 
     # Exit Codes
 
-    def exit(self, code=None, message=None, perfdata=None, extdata=None):
+    def exit(self, code: int = None, message: str = None, perfdata=None, extdata=None) -> None:
         """
         manual exit from the plugin
 
@@ -198,7 +199,7 @@ class Plugin(object):
             print(extdata)
         sys.exit(code)
 
-    def die(self, message):
+    def die(self, message: str) -> None:
         """
         manual exit to use in case of internal error
         always return UNKNOWN status
@@ -208,7 +209,7 @@ class Plugin(object):
         """
         self.exit(code=UNKNOWN, message=message)
 
-    def finish(self, code=None, message=None, perfdata=None, extdata=None):
+    def finish(self, code: int = None, message: str = None, perfdata: str = None, extdata: str = None) -> None:
         """
         exit when using internal function to add results
         automatically generates output, but each parameter can be overriden
@@ -234,7 +235,7 @@ class Plugin(object):
 
     # Argument Parsing
 
-    def add_arg(self, *args, **kwargs):
+    def add_arg(self, *args, **kwargs) -> argparse.Action:
         """
         add an argument for argument parsing
         transmitted to internal argparse
@@ -248,7 +249,7 @@ class Plugin(object):
         """
         return self.parser.add_argument(*args, **kwargs)
 
-    def parse_args(self, arguments=None):
+    def parse_args(self, arguments: typing.Sequence[str] = None) -> typing.Optional[argparse.Namespace]:
         """
         parses the arguments from command-line
 
@@ -264,7 +265,7 @@ class Plugin(object):
     # Threshold
 
     @staticmethod
-    def check_threshold(value, warning=None, critical=None):
+    def check_threshold(value, warning: typing.Union[str, "Threshold"] = None, critical: typing.Union[str, "Threshold"] = None):
         """
         checks a value against warning and critical thresholds
         threshold syntax: https://nagios-plugins.org/doc/guidelines.html
@@ -291,7 +292,7 @@ class Plugin(object):
 
     # Results Handling
 
-    def add_result(self, code, message=None):
+    def add_result(self, code: int, message: str = None):
         """
         add a result to the internal result list
 
@@ -300,7 +301,7 @@ class Plugin(object):
         """
         self._results.append(Result(code, message))
 
-    def get_code(self):
+    def get_code(self) -> int:
         """
         the final code for multi-checks
 
@@ -315,7 +316,7 @@ class Plugin(object):
                 code = result.code
         return code
 
-    def get_message(self, msglevels=None, joiner=None):
+    def get_message(self, msglevels: typing.List[int] = None, joiner: str = None) -> str:
         """
         the final message for mult-checks
 
@@ -327,7 +328,7 @@ class Plugin(object):
             one-line message created with input results
             or None if there are none
         """
-        messages = []
+        messages: typing.List[str] = []
         if joiner is None:
             joiner = ', '
         if msglevels is None:
@@ -339,7 +340,7 @@ class Plugin(object):
 
     # Perfdata
 
-    def add_perfdata(self, *args, **kwargs):
+    def add_perfdata(self, *args, **kwargs) -> None:
         """
         add a perfdata to the internal perfdata list
 
@@ -348,7 +349,7 @@ class Plugin(object):
         """
         self._perfdata.append(Perfdata(*args, **kwargs))
 
-    def get_perfdata(self):
+    def get_perfdata(self) -> str:
         """
         the final string for perf data
 
@@ -359,7 +360,7 @@ class Plugin(object):
 
     # Extended Data
 
-    def add_extdata(self, message):
+    def add_extdata(self, message: str) -> None:
         """
         add extended data to the internal extdata list
 
@@ -368,7 +369,7 @@ class Plugin(object):
         """
         self._extdata.append(str(message))
 
-    def get_extdata(self):
+    def get_extdata(self) -> str:
         """
         the final string for external data
         returns:
@@ -377,12 +378,12 @@ class Plugin(object):
         return '\n'.join(self._extdata)
 
 
-class Result(object):
+class Result:
     """
     Object representing a result
     """
 
-    def __init__(self, code, message=None):
+    def __init__(self, code: int, message: str = None) -> None:
         """
         initialize a result object
 
@@ -390,11 +391,11 @@ class Result(object):
             code: the status code
             message: the status message
         """
-        self.code = code
-        self.codestr = _CODES_STR[code]
-        self.message = message
+        self.code: int = code
+        self.codestr: str = _CODES_STR[code]
+        self.message: str = message or ''
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return '{0} - {1}'.format(self.codestr, self.message)
 
 
@@ -403,10 +404,10 @@ class ParseError(RuntimeError):
     pass
 
 
-class Threshold(object):
+class Threshold:
     """ object to represent thresholds """
 
-    def __init__(self, threshold):
+    def __init__(self, threshold: str) -> None:
         """
         initializes a new Threshold Object
 
@@ -414,13 +415,13 @@ class Threshold(object):
             threshold: string describing the threshold
                 (see https://nagios-plugins.org/doc/guidelines.html)
         """
-        self._threshold = threshold
-        self._min = 0
-        self._max = 0
-        self._inclusive = False
+        self._threshold: str = threshold
+        self._min: float = 0
+        self._max: float = 0
+        self._inclusive: bool = False
         self._parse(threshold)
 
-    def _parse(self, threshold):
+    def _parse(self, threshold: str) -> None:
         """
         internal threshold string parser
 
@@ -450,7 +451,7 @@ class Threshold(object):
         if self._max < self._min:
             raise ValueError('max must be superior to min')
 
-    def check(self, value):
+    def check(self, value: int) -> bool:
         """
         check if a value is correct according to threshold
 
@@ -462,18 +463,18 @@ class Threshold(object):
         else:
             return False if value > self._max or value < self._min else True
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return '{0}({1})'.format(self.__class__.__name__, self._threshold)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self._threshold
 
 
-class Perfdata(object):
+class Perfdata:
     """ object to represent performance data """
 
-    def __init__(self, label, value, uom=None,
-                 warning=None, critical=None, minimum=None, maximum=None):
+    def __init__(self, label: str, value: str, uom: str = None,
+                 warning: str = None, critical: str = None, minimum: str = None, maximum: str = None) -> None:
         """
         initalize the object
         most arguments refer to :
@@ -488,15 +489,15 @@ class Perfdata(object):
             minimum: minimum value (usually for graphs)
             maximum: maximul value (usually for graphs)
         """
-        self.label = label
+        self.label: str = label
         self.value = value
-        self.uom = uom
-        self.warning = warning
-        self.critical = critical
-        self.minimum = minimum
-        self.maximum = maximum
+        self.uom: typing.Optional[str] = uom
+        self.warning: typing.Optional[str] = warning
+        self.critical: typing.Optional[str] = critical
+        self.minimum: typing.Optional[str] = minimum
+        self.maximum: typing.Optional[str] = maximum
 
-    def __str__(self):
+    def __str__(self) -> str:
         return '\'{label}\'={value}{uom};{warn};{crit};{mini};{maxi}'.format(
             label=self.label,
             value=self.value,
@@ -507,5 +508,5 @@ class Perfdata(object):
             maxi=self.maximum if self.maximum is not None else '',
         )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "%s(%s)" % (self.__class__.__name__, self.label)
