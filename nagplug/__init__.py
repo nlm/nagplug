@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 A Nagios-plugin-guidelines-compliant plugin creation library
 
