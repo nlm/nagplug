@@ -391,20 +391,21 @@ class Plugin:
 
     def get_extdata(self) -> str:
         """
-        the final string for external data
+        the final string for extended data
         returns:
             the extended data string
         """
         return '\n'.join(self._extdata)
     
-    # Utils
+    # Logging
 
-    def extdata_log_handler(self):
+    def extdata_log_handler(self) -> "NagplugLoggingHandler":
         """
+        a convenience log handler for extdata
         returns:
-            NagplugLogHandler linked to this instance
+            NagplugLoggingHandler linked to this instance
         """
-        return NagplugLogHandler(self)
+        return NagplugLoggingHandler(self)
 
 
 class Result:
