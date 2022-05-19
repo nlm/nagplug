@@ -270,7 +270,11 @@ class Plugin:
     # Threshold
 
     @staticmethod
-    def check_threshold(value, warning: typing.Union[str, "Threshold"] = None, critical: typing.Union[str, "Threshold"] = None):
+    def check_threshold(
+        value,
+        warning: typing.Union[str, "Threshold"] = None,
+        critical: typing.Union[str, "Threshold"] = None
+    ):
         """
         checks a value against warning and critical thresholds
         threshold syntax: https://nagios-plugins.org/doc/guidelines.html
@@ -456,7 +460,7 @@ class Threshold:
         if self._max < self._min:
             raise ValueError('max must be superior to min')
 
-    def check(self, value: int) -> bool:
+    def check(self, value: typing.Union[int, float]) -> bool:
         """
         check if a value is correct according to threshold
 
