@@ -387,7 +387,8 @@ class Plugin:
         arguments:
             message: a free-form string
         """
-        self._extdata.append(str(message))
+        safe_message = str(message).replace('|', '!')
+        self._extdata.append(safe_message)
 
     def get_extdata(self) -> str:
         """
