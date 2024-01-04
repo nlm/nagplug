@@ -458,7 +458,7 @@ class Threshold:
         arguments:
             threshold: string describing the threshold
         """
-        match = re.search(r'^(@?)((~|\d*):)?(\d*)$', threshold)
+        match = re.search(r'^(@?)((~|\d*|\-\d*):)?(\d*|\-\d*)$', threshold)
 
         if not match:
             raise ValueError('Error parsing Threshold: {0}'.format(threshold))
